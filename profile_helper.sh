@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 if [ -s "$BASH" ]; then
     file_name=${BASH_SOURCE[0]}
 elif [ -s "$ZSH_NAME" ]; then
@@ -8,20 +9,23 @@ script_dir=$(cd "$(dirname "$file_name")" && pwd)
 
 . "$script_dir/realpath/realpath.sh"
 
-if [ -f ~/.base16_theme ]; then
-  script_name=$(basename "$(realpath ~/.base16_theme)" .sh)
+theme_file=$XDG_CONFIG_HOME/base16-shell/base16_theme
+
+if [ -f $theme_file ]; then
+  script_name=$(basename "$(realpath $theme_file)" .sh)
   echo "export BASE16_THEME=${script_name#*-}"
-  echo ". ~/.base16_theme"
+  echo ". $theme_file"
 fi
 cat <<'FUNC'
 _base16()
 {
+  theme_file=$XDG_CONFIG_HOME/base16-shell/base16_theme
   local script=$1
   local theme=$2
   [ -f $script ] && . $script
-  ln -fs $script ~/.base16_theme
+  ln -fs $script $theme_file
   export BASE16_THEME=${theme}
-  echo -e "if \0041exists('g:colors_name') || g:colors_name != 'base16-$theme'\n  colorscheme base16-$theme\nendif" >| ~/.vimrc_background
+  echo -e "if \0041exists('g:colors_name') || g:colors_name != 'base16-$theme'\n  colorscheme base16-$theme\nendif" >| $XDG_CONFIG_HOME/base16-shell/vimrc_background
   if [ -n ${BASE16_SHELL_HOOKS:+s} ] && [ -d "${BASE16_SHELL_HOOKS}" ]; then
     for hook in $BASE16_SHELL_HOOKS/*; do
       [ -f "$hook" ] && [ -x "$hook" ] && "$hook"
