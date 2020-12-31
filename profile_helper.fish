@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-# [what] provides aliases for base16 themes and sets ~/.base16_theme
+# [what] provides aliases for base16 themes and sets $XDG_CONFIG_HOME/base16-shell/base16_theme
 #
 # [usage] can be added to ~/.config/fish/config.fish like so:
 #
@@ -14,10 +14,10 @@
 set SCRIPT_DIR (realpath (dirname (status -f)))
 
 # load currently active theme...
-if test -e ~/.base16_theme
-  set -l SCRIPT_NAME (basename (realpath ~/.base16_theme) .sh)
+if test -e $XDG_CONFIG_HOME/base16-shell/base16_theme
+  set -l SCRIPT_NAME (basename (realpath $XDG_CONFIG_HOME/base16-shell/base16_theme) .sh)
   set -gx BASE16_THEME (string match 'base16-*' $BASE16_THEME  | string sub -s (string length 'base16-*'))
-  eval sh '"'(realpath ~/.base16_theme)'"'
+  eval sh '"'(realpath $XDG_CONFIG_HOME/base16-shell/base16_theme)'"'
 end
 
 
@@ -26,9 +26,9 @@ for SCRIPT in $SCRIPT_DIR/scripts/*.sh
   set THEME (basename $SCRIPT .sh)
   function $THEME -V SCRIPT -V THEME
     sh $SCRIPT
-    ln -sf $SCRIPT ~/.base16_theme
+    ln -sf $SCRIPT $XDG_CONFIG_HOME/base16-shell/base16_theme
     set -gx BASE16_THEME (string split -m 1 '-' $THEME)[2]
-    echo -e "if !exists('g:colors_name') || g:colors_name != '$THEME'\n  colorscheme $THEME\nendif" >  ~/.vimrc_background
+    echo -e "if !exists('g:colors_name') || g:colors_name != '$THEME'\n  colorscheme $THEME\nendif" >  $XDG_CONFIG_HOME/base16-shell/vimrc_background
     if test (count $BASE16_SHELL_HOOKS) -eq 1; and test -d "$BASE16_SHELL_HOOKS"
       for hook in $BASE16_SHELL_HOOKS/*
         test -f "$hook"; and test -x "$hook"; and "$hook"
